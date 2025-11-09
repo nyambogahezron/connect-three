@@ -84,7 +84,7 @@ export default function GameScreen() {
 			}
 		};
 		initPlayer();
-	}, [currentPlayer, getOrCreateDefaultPlayer]);
+	}, [currentPlayer]);
 
 	useEffect(() => {
 		if (gameState === 'won' && winCondition) {
@@ -356,45 +356,34 @@ export default function GameScreen() {
 					),
 				}}
 			/>
-			<ScrollView
-				contentContainerStyle={styles.scrollContent}
-				showsVerticalScrollIndicator={false}
-			>
-				<PersistentScoreDisplay
-					gameScore={persistentScoring.gameScore}
-					showLifetimeStats={true}
-					showMultiplier={true}
-				/>
+			<View style={styles.mainContainer}>
+				{/* Compact Top Section */}
+				<View style={styles.topSection}>
+					<View style={styles.compactInfoRow}>
+						<View style={styles.compactScoreWrapper}>
+							<View style={styles.compactScoreContainer}>
+								<PersistentScoreDisplay
+									gameScore={persistentScoring.gameScore}
+									showLifetimeStats={false}
+									showMultiplier={true}
+								/>
+							</View>
+						</View>
+						{gameVariant === 'classic' && (
+							<View style={styles.compactKingWrapper}>
+								<View style={styles.compactKingContainer}>
+									<KingCounter
+										redKings={kingCounts.red}
+										yellowKings={kingCounts.yellow}
+									/>
+								</View>
+							</View>
+						)}
+					</View>
+				</View>
 
-				<ScoreBoard stats={stats} gameVariant={gameVariant} />
-
-				{persistentScoring.gameScore.scoreEvents.length > 0 && (
-					<ScoreEventFeed events={persistentScoring.gameScore.scoreEvents} />
-				)}
-
-				{gameVariant === 'classic' && (
-					<KingCounter
-						redKings={kingCounts.red}
-						yellowKings={kingCounts.yellow}
-					/>
-				)}
-
-				<PlayerIndicator
-					currentPlayer={
-						gameMode.type === 'ai' && gameCurrentPlayer === 'red'
-							? 'red'
-							: gameCurrentPlayer
-					}
-					isAnimating={isAnimating || isAIThinking}
-					displayName={getCurrentPlayerDisplay()}
-				/>
-
-				<AIThinkingIndicator
-					visible={isAIThinking}
-					difficulty={gameMode.aiDifficulty}
-				/>
-
-				<View style={styles.gameContainer}>
+				{/* Centered Game Board */}
+				<View style={styles.focusedGameContainer}>
 					<GameBoard
 						board={board}
 						winCondition={winCondition}
@@ -413,23 +402,26 @@ export default function GameScreen() {
 					))}
 				</View>
 
-				<View style={styles.buttonContainer}>
-					<TouchableOpacity
-						style={styles.resetButton}
-						onPress={handleResetGame}
-						activeOpacity={0.8}
-					>
-						<RotateCcw size={20} color='#ffffff' />
-						<Text style={styles.resetButtonText}>Reset Game</Text>
-					</TouchableOpacity>
+				{/* Bottom Section with Controls */}
+				<View style={styles.bottomSection}>
+					<View style={styles.compactButtonContainer}>
+						<TouchableOpacity
+							style={styles.compactResetButton}
+							onPress={handleResetGame}
+							activeOpacity={0.8}
+						>
+							<RotateCcw size={18} color='#ffffff' />
+							<Text style={styles.compactResetButtonText}>Reset</Text>
+						</TouchableOpacity>
 
-					<TouchableOpacity
-						style={styles.clearStatsButton}
-						onPress={handleResetStats}
-						activeOpacity={0.8}
-					>
-						<Text style={styles.clearStatsButtonText}>Clear Session Stats</Text>
-					</TouchableOpacity>
+						<TouchableOpacity
+							style={styles.compactClearButton}
+							onPress={handleResetStats}
+							activeOpacity={0.8}
+						>
+							<Text style={styles.compactClearButtonText}>Clear Stats</Text>
+						</TouchableOpacity>
+					</View>
 				</View>
 
 				<GameModal
@@ -441,7 +433,7 @@ export default function GameScreen() {
 					onPlayAgain={handlePlayAgain}
 					onClose={handlePlayAgain}
 				/>
-			</ScrollView>
+			</View>
 
 			{/* Settings Modal */}
 			<Modal
@@ -515,6 +507,104 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		color: '#6b7280',
 		fontFamily: 'Orbitron-Regular',
+	},
+	mainContainer: {
+		flex: 1,
+		padding: 16,
+	},
+	topSection: {
+		marginBottom: 12,
+	},
+	compactInfoRow: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'flex-start',
+		marginBottom: 8,
+	},
+	compactScoreWrapper: {
+		flex: 1,
+		marginRight: 8,
+	},
+	compactKingWrapper: {
+		flex: 0.6,
+	},
+	compactPlayerSection: {
+		alignItems: 'center',
+		marginBottom: 8,
+	},
+	compactScoreContainer: {
+		transform: [{ scale: 0.9 }],
+	},
+	compactKingContainer: {
+		transform: [{ scale: 0.85 }],
+	},
+	compactPlayerContainer: {
+		transform: [{ scale: 0.9 }],
+	},
+	focusedGameContainer: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		position: 'relative',
+		minHeight: 300,
+	},
+	bottomSection: {
+		marginTop: 16,
+		maxHeight: 200,
+	},
+	compactButtonContainer: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		gap: 12,
+		marginBottom: 12,
+	},
+	compactResetButton: {
+		backgroundColor: '#4f46e5',
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingVertical: 10,
+		paddingHorizontal: 16,
+		borderRadius: 8,
+		flex: 1,
+		shadowColor: '#4f46e5',
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.2,
+		shadowRadius: 4,
+		elevation: 4,
+	},
+	compactResetButtonText: {
+		color: '#ffffff',
+		fontSize: 14,
+		fontWeight: '600',
+		marginLeft: 6,
+		fontFamily: 'Orbitron-Bold',
+	},
+	compactClearButton: {
+		backgroundColor: 'transparent',
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingVertical: 10,
+		paddingHorizontal: 16,
+		borderRadius: 8,
+		borderWidth: 1,
+		borderColor: '#e2e8f0',
+		flex: 1,
+	},
+	compactClearButtonText: {
+		color: '#64748b',
+		fontSize: 12,
+		fontWeight: '500',
+		fontFamily: 'Orbitron-Regular',
+	},
+	statsScrollView: {
+		maxHeight: 120,
+		backgroundColor: '#ffffff',
+		borderRadius: 8,
+		padding: 8,
 	},
 	scrollContent: {
 		padding: 20,

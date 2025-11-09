@@ -95,7 +95,7 @@ export default function RootLayout() {
 						headerRight: () => <HeaderMenu tintColor='#fff' />,
 					}}
 				/>
-				<Stack.Screen name='(home)' options={{ headerShown: true }} />
+				<Stack.Screen name='(home)' options={{ headerShown: false }} />
 				<Stack.Screen name='+not-found' />
 			</Stack>
 			<StatusBar style='auto' backgroundColor='#f4511e' />
